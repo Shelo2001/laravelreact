@@ -49,7 +49,8 @@ input:focus {
 .btn,
 .btn-add,
 .btn-edit,
-.btn-delete {
+.btn-delete,
+.btn-pagination {
     font-family: "Roboto", sans-serif;
     outline: 0;
     background: #00a762;
@@ -69,7 +70,8 @@ input:focus {
 
 .btn-add,
 .btn-edit,
-.btn-delete {
+.btn-delete,
+.btn-pagination {
     padding: 0.5rem 0.75rem;
     font-size: 14px;
     border-radius: 4px;
@@ -79,6 +81,9 @@ input:focus {
 }
 .btn-delete {
     background-color: #b72424;
+}
+.btn-pagination {
+    background-color: #332fd0;
 }
 
 .btn-logout {

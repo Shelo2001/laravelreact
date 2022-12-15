@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axiosClient from "../axiosclient";
 import { Link } from "react-router-dom";
+import { useStateContext } from "../contexts/ContextProvider";
 
 const Users = () => {
     const [users, setUsers] = useState([]);
+    const [pages, setPages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { setNotification } = useStateContext();
 
     useEffect(() => {
         getUsers();
     }, []);
+
+    useEffect(() => {}, []);
 
     const getUsers = () => {
         setLoading(true);
@@ -16,6 +21,30 @@ const Users = () => {
             .get("/users")
             .then(({ data }) => {
                 setUsers(data.data);
+                let pagesBackend = data.meta.links;
+                let newPages = pagesBackend.slice(1, -1);
+                setPages(newPages);
+                setLoading(false);
+            })
+            .catch(() => {
+                setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        getUsersByPage();
+    }, []);
+
+    const getUsersByPage = (page) => {
+        setLoading(true);
+        axiosClient
+            .get(page)
+            .then(({ data }) => {
+                setUsers(data.data);
+                console.log(data);
+                let pagesBackend = data.meta.links;
+                let newPages = pagesBackend.slice(1, -1);
+                setPages(newPages);
                 setLoading(false);
             })
             .catch(() => {
@@ -28,7 +57,7 @@ const Users = () => {
             return;
         }
         axiosClient.delete(`/users/${u.id}`).then(() => {
-            //TODO show notification
+            setNotification("User successfully Deleted");
             getUsers();
         });
     };
@@ -78,7 +107,7 @@ const Users = () => {
                                     <td>
                                         <Link
                                             className="btn-edit"
-                                            to={"/users" + u.id}
+                                            to={"/users/" + u.id}
                                         >
                                             Edit
                                         </Link>
@@ -96,6 +125,22 @@ const Users = () => {
                     )}
                 </table>
             </div>
+
+            {pages.map((page) => (
+                <button
+                    style={
+                        page.active
+                            ? { margin: "2px", backgroundColor: "#0002A1" }
+                            : { margin: "2px" }
+                    }
+                    className="btn-pagination"
+                    onClick={() => {
+                        getUsersByPage(page.url);
+                    }}
+                >
+                    {page.label}
+                </button>
+            ))}
         </div>
     );
 };
